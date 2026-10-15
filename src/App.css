@@ -1773,7 +1773,7 @@ kbd {
 
 /* ===== MAPA RPG ILUSTRADO — NOVA VERSÃO ===== */
 .game-world {
-  background: #477943 url("/rpg-village-map.png") center / 100% 100% no-repeat !important;
+  background: #477943 url("/vila-principal.png") center / 100% 100% no-repeat !important;
   image-rendering: pixelated;
 }
 .game-world > .sky-glow,

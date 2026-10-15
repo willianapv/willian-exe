@@ -103,6 +103,10 @@ const dialogContent: Record<DialogType, { title: string; text: string }> = {
     title: "Mercado — uma pausa para recarregar",
     text: "Vai explorar a vila inteira? Que tal comprar um café para recarregar as energias? ☕ Minha trajetória também foi construída no contato com pessoas, na rotina de trabalho e na prática de resolver problemas reais. Essas experiências me trouxeram disciplina, comunicação, senso de responsabilidade e uma visão de produto que quero levar comigo para a tecnologia.",
   },
+  market: {
+    title: "Mercado — uma pausa para recarregar",
+    text: "Vai explorar a vila inteira? Que tal comprar um café para recarregar as energias? Minha trajetória também foi construída no contato com pessoas, na rotina de trabalho e na prática de resolver problemas reais. Essas experiências me trouxeram disciplina, comunicação, senso de responsabilidade e uma visão de produto que quero levar comigo para a tecnologia.",
+  },
   contact: {
     title: "CAIXA DE CORREIO — VAMOS CONVERSAR!",
     text: "Encontrou meu cantinho de contato! Estou em busca de uma oportunidade de estágio em tecnologia e aberto a conversar sobre projetos, ideias e oportunidades. Escolha um canal abaixo para falar comigo.",
@@ -126,7 +130,7 @@ function App() {
   const [isMoving, setIsMoving] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<DialogType>("sign");
-  const [message, setMessage] = useState(
+  const [, setMessage] = useState(
     "Use WASD ou as setas para explorar."
   );
 
