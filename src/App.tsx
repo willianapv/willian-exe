@@ -7,14 +7,70 @@ type PlayerPosition = {
   y: number;
 };
 
+type Direction = {
+  x: number;
+  y: number;
+  facing: "up" | "down" | "left" | "right";
+};
+
+type CollisionArea = {
+  xMin: number;
+  xMax: number;
+  yMin: number;
+  yMax: number;
+};
+
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
+// Áreas aproximadas de colisão, usando porcentagens do mapa.
+const collisionAreas: CollisionArea[] = [
+  // Árvores
+  { xMin: 3, xMax: 11, yMin: 55, yMax: 66 },
+  { xMin: 86, xMax: 96, yMin: 57, yMax: 69 },
+  { xMin: 75, xMax: 83, yMin: 74, yMax: 81 },
+
+  // Arbustos
+  { xMin: 3, xMax: 12, yMin: 75, yMax: 82 },
+  { xMin: 87, xMax: 97, yMin: 68, yMax: 76 },
+  { xMin: 51, xMax: 58, yMin: 90, yMax: 96 },
+  { xMin: 21, xMax: 28, yMin: 65, yMax: 72 },
+
+  // Pedras
+  { xMin: 33, xMax: 40, yMin: 86, yMax: 92 },
+  { xMin: 79, xMax: 86, yMin: 91, yMax: 97 },
+  { xMin: 59, xMax: 66, yMin: 74, yMax: 80 },
+
+  // Placa HELLO WORLD!
+  { xMin: 81, xMax: 90, yMin: 41, yMax: 49 },
+];
+
+const hasCollision = (x: number, y: number) => {
+  // Aproxima a posição dos pés do personagem.
+  const footY = y + 2;
+
+  return collisionAreas.some(
+    (area) =>
+      x >= area.xMin &&
+      x <= area.xMax &&
+      footY >= area.yMin &&
+      footY <= area.yMax
+  );
+};
+
 function App() {
-  const [player, setPlayer] = useState<PlayerPosition>({ x: 12, y: 63 });
-  const [facing, setFacing] = useState<"up" | "down" | "left" | "right">("down");
+  const [player, setPlayer] = useState<PlayerPosition>({
+    x: 12,
+    y: 63,
+  });
+
+  const [facing, setFacing] = useState<
+    "up" | "down" | "left" | "right"
+  >("down");
+
   const [isMoving, setIsMoving] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+
   const [message, setMessage] = useState(
     "Use WASD ou as setas para explorar."
   );
@@ -48,21 +104,22 @@ function App() {
         return;
       }
 
-      const directions: Record<
-        string,
-        { x: number; y: number; facing: "up" | "down" | "left" | "right" }
-      > = {
+      const directions: Record<string, Direction> = {
         arrowup: { x: 0, y: -3, facing: "up" },
         w: { x: 0, y: -3, facing: "up" },
+
         arrowdown: { x: 0, y: 3, facing: "down" },
         s: { x: 0, y: 3, facing: "down" },
+
         arrowleft: { x: -3, y: 0, facing: "left" },
         a: { x: -3, y: 0, facing: "left" },
+
         arrowright: { x: 3, y: 0, facing: "right" },
         d: { x: 3, y: 0, facing: "right" },
       };
 
       const direction = directions[key];
+
       if (!direction) return;
 
       event.preventDefault();
@@ -71,14 +128,26 @@ function App() {
       setIsMoving(true);
       setDialogOpen(false);
 
-      setPlayer((current) => ({
-        x: clamp(current.x + direction.x, 5, 95),
-        y: clamp(current.y + direction.y, 18, 80),
-      }));
+      setPlayer((current) => {
+        const nextX = clamp(current.x + direction.x, 5, 95);
+        const nextY = clamp(current.y + direction.y, 18, 80);
 
-      setMessage("Boa! Continue explorando o portfólio.");
+        // Se o próximo movimento colidir, mantém a posição atual.
+        if (hasCollision(nextX, nextY)) {
+          setMessage("Ops! Tem um obstáculo no caminho.");
+          return current;
+        }
+
+        setMessage("Boa! Continue explorando o portfólio.");
+
+        return {
+          x: nextX,
+          y: nextY,
+        };
+      });
 
       window.clearTimeout(movementTimer);
+
       movementTimer = window.setTimeout(() => {
         setIsMoving(false);
       }, 130);
@@ -255,7 +324,9 @@ function App() {
             </div>
 
             <div
-              className={`player-sprite facing-${facing}${isMoving ? " is-moving" : ""}`}
+              className={`player-sprite facing-${facing}${
+                isMoving ? " is-moving" : ""
+              }`}
               style={{
                 left: `${player.x}%`,
                 top: `${player.y}%`,
