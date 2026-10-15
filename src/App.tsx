@@ -136,6 +136,65 @@ function App() {
 
   const playerRef = useRef(player);
   const dialogOpenRef = useRef(dialogOpen);
+  const touchMoveTimerRef = useRef<number | undefined>(undefined);
+
+  const movePlayer = (direction: Direction) => {
+    setFacing(direction.facing);
+    setIsMoving(true);
+    setDialogOpen(false);
+
+    const current = playerRef.current;
+    const nextPosition: PlayerPosition = {
+      x: clamp(current.x + direction.x, 5, 95),
+      y: clamp(current.y + direction.y, 5, 96),
+    };
+
+    if (!hasCollision(nextPosition.x, nextPosition.y)) {
+      playerRef.current = nextPosition;
+      setPlayer(nextPosition);
+      const nearby = getNearbyInteraction(nextPosition);
+      setMessage(
+        nearby
+          ? `Pressione interagir para conhecer ${nearby.label}.`
+          : "Boa! Continue explorando o portfólio."
+      );
+    } else {
+      setMessage("Ops! Tem um obstáculo no caminho.");
+    }
+
+    window.setTimeout(() => setIsMoving(false), 130);
+  };
+
+  const interact = () => {
+    if (dialogOpenRef.current) {
+      setDialogOpen(false);
+      setMessage("Continue explorando o portfólio.");
+      return;
+    }
+
+    const nearby = getNearbyInteraction(playerRef.current);
+    if (nearby) {
+      setDialogType(nearby.type);
+      setDialogOpen(true);
+      setMessage(`Você interagiu com ${nearby.label}.`);
+    } else {
+      setMessage("Aproxime-se de uma construção para interagir.");
+    }
+  };
+
+  const stopTouchMovement = () => {
+    if (touchMoveTimerRef.current !== undefined) {
+      window.clearInterval(touchMoveTimerRef.current);
+      touchMoveTimerRef.current = undefined;
+    }
+    setIsMoving(false);
+  };
+
+  const startTouchMovement = (direction: Direction) => {
+    stopTouchMovement();
+    movePlayer(direction);
+    touchMoveTimerRef.current = window.setInterval(() => movePlayer(direction), 180);
+  };
 
   useEffect(() => {
     playerRef.current = player;
@@ -164,22 +223,7 @@ function App() {
 
       if (key === "e" || key === "enter") {
         event.preventDefault();
-
-        if (dialogOpenRef.current) {
-          setDialogOpen(false);
-          setMessage("Continue explorando o portfólio.");
-          return;
-        }
-
-        const nearby = getNearbyInteraction(playerRef.current);
-        if (nearby) {
-          setDialogType(nearby.type);
-          setDialogOpen(true);
-          setMessage(`Você interagiu com ${nearby.label}.`);
-        } else {
-          setMessage("Aproxime-se de uma construção e pressione E para interagir.");
-        }
-
+        interact();
         return;
       }
 
@@ -206,36 +250,10 @@ function App() {
 
       event.preventDefault();
 
-      setFacing(direction.facing);
-      setIsMoving(true);
-      setDialogOpen(false);
-
-      const current = playerRef.current;
-
-      const nextPosition: PlayerPosition = {
-        x: clamp(current.x + direction.x, 5, 95),
-        y: clamp(current.y + direction.y, 5, 96),
-      };
-
-      if (hasCollision(nextPosition.x, nextPosition.y)) {
-        setMessage("Ops! Tem um obstáculo no caminho.");
-      } else {
-        playerRef.current = nextPosition;
-        setPlayer(nextPosition);
-
-        const nearby = getNearbyInteraction(nextPosition);
-        if (nearby) {
-          setMessage(`Pressione E para conhecer ${nearby.label}.`);
-        } else {
-          setMessage("Boa! Continue explorando o portfólio.");
-        }
-      }
+      movePlayer(direction);
 
       window.clearTimeout(movementTimer);
-
-      movementTimer = window.setTimeout(() => {
-        setIsMoving(false);
-      }, 130);
+      movementTimer = window.setTimeout(() => setIsMoving(false), 130);
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -243,6 +261,9 @@ function App() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.clearTimeout(movementTimer);
+      if (touchMoveTimerRef.current !== undefined) {
+        window.clearInterval(touchMoveTimerRef.current);
+      }
     };
   }, []);
 
@@ -326,6 +347,15 @@ function App() {
                 </div>
               </div>
             )}
+          </div>
+          <div className="mobile-game-controls" aria-label="Controles do jogo para celular">
+            <div className="mobile-dpad">
+              <button type="button" aria-label="Mover para cima" onPointerDown={(e) => { e.preventDefault(); startTouchMovement({ x: 0, y: -3, facing: "up" }); }} onPointerUp={stopTouchMovement} onPointerCancel={stopTouchMovement} onPointerLeave={stopTouchMovement}>▲</button>
+              <button type="button" aria-label="Mover para esquerda" onPointerDown={(e) => { e.preventDefault(); startTouchMovement({ x: -3, y: 0, facing: "left" }); }} onPointerUp={stopTouchMovement} onPointerCancel={stopTouchMovement} onPointerLeave={stopTouchMovement}>◀</button>
+              <button type="button" aria-label="Mover para baixo" onPointerDown={(e) => { e.preventDefault(); startTouchMovement({ x: 0, y: 3, facing: "down" }); }} onPointerUp={stopTouchMovement} onPointerCancel={stopTouchMovement} onPointerLeave={stopTouchMovement}>▼</button>
+              <button type="button" aria-label="Mover para direita" onPointerDown={(e) => { e.preventDefault(); startTouchMovement({ x: 3, y: 0, facing: "right" }); }} onPointerUp={stopTouchMovement} onPointerCancel={stopTouchMovement} onPointerLeave={stopTouchMovement}>▶</button>
+            </div>
+            <button className="mobile-interact-button" type="button" onClick={interact}>{dialogOpen ? "FECHAR" : "INTERAGIR"}</button>
           </div>
           <div className="game-controls"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> MOVER</span><span className="control-arrows"><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd> MOVER</span><span className="interact-hint"><kbd>E</kbd> INTERAGIR</span><span className="menu-hint"><kbd>ESC</kbd> MENU</span></div>
         </div>
