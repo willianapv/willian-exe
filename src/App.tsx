@@ -20,6 +20,22 @@ type CollisionArea = {
   yMax: number;
 };
 
+type DialogType =
+  | "barbershop"
+  | "sign"
+  | "study"
+  | "projects"
+  | "experience"
+  | "home"
+  | "market";
+
+type InteractionPoint = {
+  type: DialogType;
+  x: number;
+  y: number;
+  label: string;
+};
+
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
@@ -46,13 +62,50 @@ const hasCollision = (x: number, y: number) => {
   );
 };
 
-const isNearSign = (position: PlayerPosition) =>
-  Math.abs(position.x - 77) <= 9 &&
-  Math.abs(position.y - 27) <= 8;
+// Pontos de interação ficam nas áreas livres ao redor das construções,
+// para que o jogador consiga se aproximar sem atravessar as colisões.
+const interactionPoints: InteractionPoint[] = [
+  { type: "study", x: 16, y: 33, label: "estudos" },
+  { type: "barbershop", x: 49, y: 34, label: "Vibe Mais Barbershop" },
+  { type: "projects", x: 80, y: 34, label: "projetos" },
+  { type: "experience", x: 16, y: 63, label: "mercado e café" },
+  { type: "home", x: 79, y: 63, label: "casa" },
+  { type: "sign", x: 72, y: 49, label: "placa Bem-vindo" },
+];
 
-const isNearBarbershop = (position: PlayerPosition) =>
-  Math.abs(position.x - 50) <= 12 &&
-  Math.abs(position.y - 34) <= 9;
+const getNearbyInteraction = (position: PlayerPosition) =>
+  interactionPoints.find(
+    (point) =>
+      Math.abs(position.x - point.x) <= 12 &&
+      Math.abs(position.y - point.y) <= 11
+  ) ?? null;
+
+const dialogContent: Record<DialogType, { title: string; text: string }> = {
+  barbershop: {
+    title: "V+ — Vibe Mais Barbershop",
+    text: "Depois de cinco anos trabalhando em barbearias parceiras, decidi dar um passo importante: construir meu próprio espaço. Assim nasceu a Vibe Mais Barbershop, um projeto feito com dedicação, atendimento próximo e vontade de crescer. Empreender me ensinou na prática sobre responsabilidade, organização, relacionamento com clientes e resolução de problemas.",
+  },
+  home: {
+    title: "Minha base: família",
+    text: "Sou casado, e minha esposa também trabalha na área de tecnologia. Juntos construímos nossa família e compartilhamos os desafios e aprendizados da vida. Tenho duas filhas, de 10 e 14 anos, que são uma grande motivação para eu continuar evoluindo, estudar e buscar novas oportunidades.",
+  },
+  study: {
+    title: "Estudos — Análise e Desenvolvimento de Sistemas",
+    text: "Estou cursando Análise e Desenvolvimento de Sistemas e transformando teoria em prática. Venho estudando lógica de programação, desenvolvimento web, banco de dados, APIs, fundamentos de engenharia de software e métodos ágeis. Meu objetivo é construir uma base sólida, aprender com profissionais experientes e evoluir projeto por projeto, com curiosidade, disciplina e disposição para receber feedback.",
+  },
+  projects: {
+    title: "Missões de desenvolvimento",
+    text: "Cada projeto é uma oportunidade de aprender fazendo. No Controle de Gastos, pratiquei a integração entre uma interface web e uma API. No Barber Fidelity, estou planejando um sistema de fidelidade digital para barbearias, com progressão e recompensas. E este próprio Willian.exe transforma meu portfólio em uma experiência interativa. Quero continuar criando soluções úteis, documentando minhas decisões e melhorando a cada versão.",
+  },
+  experience: {
+    title: "Mercado — uma pausa para recarregar",
+    text: "Vai explorar a vila inteira? Que tal comprar um café para recarregar as energias? ☕ Minha trajetória também foi construída no contato com pessoas, na rotina de trabalho e na prática de resolver problemas reais. Essas experiências me trouxeram disciplina, comunicação, senso de responsabilidade e uma visão de produto que quero levar comigo para a tecnologia.",
+  },
+  sign: {
+    title: "BEM-VINDO AO WILLIAN.EXE!",
+    text: "Você chegou à minha vila. Por aqui, cada construção conta uma parte da minha história: a barbearia representa o empreendedorismo, a casa representa minha família, os estudos mostram minha evolução e os projetos são os próximos níveis. Use WASD ou as setas para explorar e pressione E perto de uma construção para interagir. Bora para a próxima fase!",
+  },
+};
 
 function App() {
   const [player, setPlayer] = useState<PlayerPosition>({
@@ -66,7 +119,7 @@ function App() {
 
   const [isMoving, setIsMoving] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogType, setDialogType] = useState<"barbershop" | "sign" | "study" | "projects" | "experience" | "home">("sign");
+  const [dialogType, setDialogType] = useState<DialogType>("sign");
   const [message, setMessage] = useState(
     "Use WASD ou as setas para explorar."
   );
@@ -108,16 +161,13 @@ function App() {
           return;
         }
 
-        if (isNearBarbershop(playerRef.current)) {
-          setDialogType("barbershop");
+        const nearby = getNearbyInteraction(playerRef.current);
+        if (nearby) {
+          setDialogType(nearby.type);
           setDialogOpen(true);
-          setMessage("Você descobriu a história da Vibe Mais Barbershop.");
-        } else if (isNearSign(playerRef.current)) {
-          setDialogType("sign");
-          setDialogOpen(true);
-          setMessage("Você encontrou uma mensagem no mundo!");
+          setMessage(`Você interagiu com ${nearby.label}.`);
         } else {
-          setMessage("Aproxime-se da barbearia V+ ou da placa HELLO WORLD para interagir.");
+          setMessage("Aproxime-se de uma construção e pressione E para interagir.");
         }
 
         return;
@@ -163,10 +213,9 @@ function App() {
         playerRef.current = nextPosition;
         setPlayer(nextPosition);
 
-        if (isNearBarbershop(nextPosition)) {
-          setMessage("Pressione E para conhecer a história da Vibe Mais.");
-        } else if (isNearSign(nextPosition)) {
-          setMessage("Pressione E para ler a placa.");
+        const nearby = getNearbyInteraction(nextPosition);
+        if (nearby) {
+          setMessage(`Pressione E para conhecer ${nearby.label}.`);
         } else {
           setMessage("Boa! Continue explorando o portfólio.");
         }
@@ -186,6 +235,8 @@ function App() {
       window.clearTimeout(movementTimer);
     };
   }, []);
+
+  const nearbyInteraction = getNearbyInteraction(player);
 
   const goToProjects = () => {
     document.getElementById("projetos")?.scrollIntoView({
@@ -233,20 +284,26 @@ function App() {
           <div className="game-panel-header"><span><span className="tiny-dot" /> WORLD_01 <i>|</i> VILA PRINCIPAL</span><span>EXPLORAR.EXE</span></div>
           <div className="game-world game-world-rpg">
             <img className="village-art" src="/vila-principal.png" alt="Mapa pixel art da vila principal, com casas, barbearia, mercado, jardins e cachoeira" draggable="false" />
-            <button className="map-hotspot hotspot-study" onClick={() => { setDialogType("study"); setDialogOpen(true); setMessage("Você descobriu minha jornada de estudos."); }} aria-label="Conhecer meus estudos">ESTUDOS<br />ADS</button>
-            <button className="map-hotspot hotspot-barber" onClick={() => { setDialogType("barbershop"); setDialogOpen(true); setMessage("Você descobriu a Vibe Mais Barbershop."); }} aria-label="Conhecer a Vibe Mais Barbershop"><b>V+</b><span>VIBE MAIS</span><small>BARBERSHOP</small></button>
-            <button className="map-hotspot hotspot-projects" onClick={() => { setDialogType("projects"); setDialogOpen(true); setMessage("Confira as missões que já desenvolvi."); }} aria-label="Ver projetos">▣<br />PROJETOS</button>
-            <button className="map-hotspot hotspot-market" onClick={() => { setDialogType("experience"); setDialogOpen(true); setMessage("Experiência construída na prática."); }} aria-label="Conhecer minha experiência">MERCADO</button>
-            <button className="map-hotspot hotspot-home" onClick={() => { setDialogType("home"); setDialogOpen(true); setMessage("Um pouco sobre minha história."); }} aria-label="Conhecer minha história">CASA</button>
-            <button className="map-hotspot hotspot-sign" onClick={() => { setDialogType("sign"); setDialogOpen(true); setMessage("Você encontrou uma mensagem no mundo!"); }} aria-label="Ler placa Hello World">HELLO<br />WORLD!</button>
+            <div className="map-hotspot hotspot-study" aria-hidden="true">ESTUDOS<br />ADS</div>
+            <div className="map-hotspot hotspot-barber" aria-hidden="true"><b>V+</b><span>VIBE MAIS</span><small>BARBERSHOP</small></div>
+            <div className="map-hotspot hotspot-projects" aria-hidden="true">▣<br />PROJETOS</div>
+            <div className="map-hotspot hotspot-market" aria-hidden="true">MERCADO</div>
+            <div className="map-hotspot hotspot-home" aria-hidden="true">CASA</div>
+            <div className="map-hotspot hotspot-sign" aria-hidden="true">BEM<br />VINDO</div>
             <div className={`player-sprite facing-${facing}${isMoving ? " is-moving" : ""}`} style={{ left: `${player.x}%`, top: `${player.y}%` }} aria-label="Personagem Willian controlado pelo teclado" role="img">
               <span className="sprite-shadow" /><span className="sprite-hair" /><span className="sprite-cap" /><span className="sprite-face"><i className="sprite-eyes" /><i className="sprite-nose" /></span><span className="sprite-beard" /><span className="sprite-neck" /><span className="sprite-body" /><span className="sprite-arm arm-left" /><span className="sprite-arm arm-right" /><span className="sprite-legs" /><span className="sprite-shoes" />
             </div>
+            {nearbyInteraction && !dialogOpen && (
+              <div className="interaction-prompt" role="status" aria-live="polite">
+                <kbd>E</kbd> PRESSIONE PARA INTERAGIR
+                <span>{nearbyInteraction.label}</span>
+              </div>
+            )}
             {dialogOpen && (
               <div className="game-dialog game-dialog-docked dialog-expanded" role="dialog" aria-live="polite" aria-modal="false">
                 <div className="dialog-copy">
-                  <p className="dialog-title">{({ barbershop: "V+ — Vibe Mais Barbershop", sign: "Willian.exe", study: "Estudos e formação", projects: "Projetos em destaque", experience: "Experiência profissional", home: "Minha história" } as Record<string, string>)[dialogType]}</p>
-                  <p>{({ barbershop: "Empreendedor e barbeiro há cinco anos, construí a Vibe Mais Barbershop com trabalho, dedicação e vontade de crescer. Essa experiência me ensinou atendimento, organização e resolução de problemas.", sign: "Sou Willian, estudante de ADS e desenvolvedor em formação. Minha próxima missão é transformar ideias em projetos reais.", study: "Sou estudante de Análise e Desenvolvimento de Sistemas, construindo minha base em programação, lógica e desenvolvimento de soluções digitais.", projects: "Explore projetos práticos que fazem parte da minha evolução, incluindo aplicações web e integração com APIs.", experience: "Minha experiência como empreendedor fortaleceu minha comunicação, disciplina, organização e capacidade de resolver problemas reais.", home: "Sou Willian Almeida, estudante de ADS, empreendedor e profissional em transição para a tecnologia. Estou em busca de uma oportunidade para aprender e contribuir." } as Record<string, string>)[dialogType]}</p>
+                  <p className="dialog-title">{dialogContent[dialogType].title}</p>
+                  <p>{dialogContent[dialogType].text}</p>
                   <small>Pressione E ou ESC para fechar.</small>
                 </div>
               </div>

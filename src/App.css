@@ -2100,7 +2100,18 @@ kbd {
 }
 .game-dialog-docked.dialog-expanded {
   min-height: 96px;
+  max-height: 46%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
+.game-dialog.game-dialog-docked .dialog-copy {
+  min-width: 0;
+  padding: 2px 0;
+}
+.game-dialog.game-dialog-docked .dialog-copy small {
+  margin-top: 6px;
+}
+
 @media (max-width: 640px) {
   .game-dialog.game-dialog-docked {
     min-height: 62px;
@@ -2301,8 +2312,12 @@ kbd {
 .game-panel-header i { color:#6e786b; font-style:normal; margin:0 16px; }
 .game-world-rpg { position:relative; width:100%; aspect-ratio:1.25/1; min-height:0; overflow:hidden; background:#286b36; image-rendering:pixelated; }
 .village-art { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; image-rendering:pixelated; user-select:none; pointer-events:none; }
-.map-hotspot { position:absolute; z-index:7; transform:translate(-50%,-50%); border:2px solid #d8a95a; border-radius:2px; background:#151918ee; color:#fff; box-shadow:0 3px 0 #0008; padding:4px 7px; font-family:var(--mono); font-size:clamp(8px,.95vw,14px); line-height:1.15; text-align:center; cursor:pointer; text-shadow:1px 2px #000; transition:filter .15s,transform .15s; }
-.map-hotspot:hover,.map-hotspot:focus-visible { filter:brightness(1.25); transform:translate(-50%,-50%) scale(1.06); outline:2px solid #d4ff5c; outline-offset:2px; }
+.map-hotspot { position:absolute; z-index:7; transform:translate(-50%,-50%); border:2px solid #d8a95a; border-radius:2px; background:#151918ee; color:#fff; box-shadow:0 3px 0 #0008; padding:4px 7px; font-family:var(--mono); font-size:clamp(8px,.95vw,14px); line-height:1.15; text-align:center; cursor:default; pointer-events:none; user-select:none; text-shadow:1px 2px #000; }
+.interaction-prompt { position:absolute; z-index:12; left:50%; bottom:14px; transform:translateX(-50%); display:flex; align-items:center; justify-content:center; gap:8px; max-width:calc(100% - 24px); padding:8px 12px; border:2px solid #d4ff5c; border-radius:3px; background:#101711f2; color:#f7ffe8; box-shadow:0 3px 0 #0008; font-family:var(--mono); font-size:clamp(9px,1vw,13px); line-height:1.2; text-align:center; white-space:nowrap; pointer-events:none; animation:interaction-prompt-in .14s ease-out; }
+.interaction-prompt kbd { display:inline-flex; align-items:center; justify-content:center; min-width:24px; padding:3px 6px; border:1px solid #d4ff5c; border-radius:2px; background:#d4ff5c; color:#17200f; font-weight:900; box-shadow:0 2px 0 #8db82d; }
+.interaction-prompt span { color:#d4ff5c; text-transform:uppercase; }
+@keyframes interaction-prompt-in { from { opacity:0; transform:translate(-50%,5px); } to { opacity:1; transform:translate(-50%,0); } }
+@media (max-width: 560px) { .interaction-prompt { white-space:normal; flex-wrap:wrap; gap:5px; bottom:8px; } }
 .hotspot-study { left:16%; top:19%; }
 .hotspot-barber { left:49%; top:19%; display:flex; flex-direction:column; align-items:center; gap:1px; border-color:#e6b53c; min-width:88px; }
 .hotspot-barber b { font-family:Arial,sans-serif; font-size:clamp(22px,2.6vw,38px); line-height:.95; color:#ffdf39; }
