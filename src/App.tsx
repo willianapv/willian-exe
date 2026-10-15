@@ -70,7 +70,7 @@ const interactionPoints: InteractionPoint[] = [
   { type: "barbershop", x: 49, y: 34, label: "Vibe Mais Barbershop" },
   { type: "projects", x: 80, y: 34, label: "projetos" },
   { type: "experience", x: 16, y: 63, label: "mercado e café" },
-  { type: "home", x: 79, y: 63, label: "casa" },
+  { type: "home", x: 79, y: 89, label: "casa" },
   { type: "sign", x: 72, y: 49, label: "placa Bem-vindo" },
   { type: "contact", x: 50, y: 68, label: "caixa de correio / contato" },
 ];
