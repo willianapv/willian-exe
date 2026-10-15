@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
 type PlayerPosition = {
@@ -23,30 +23,18 @@ type CollisionArea = {
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
-// Áreas aproximadas de colisão, usando porcentagens do mapa.
 const collisionAreas: CollisionArea[] = [
-  // Árvores
-  { xMin: 3, xMax: 11, yMin: 55, yMax: 66 },
-  { xMin: 86, xMax: 96, yMin: 57, yMax: 69 },
-  { xMin: 75, xMax: 83, yMin: 74, yMax: 81 },
-
-  // Arbustos
-  { xMin: 3, xMax: 12, yMin: 75, yMax: 82 },
-  { xMin: 87, xMax: 97, yMin: 68, yMax: 76 },
-  { xMin: 51, xMax: 58, yMin: 90, yMax: 96 },
-  { xMin: 21, xMax: 28, yMin: 65, yMax: 72 },
-
-  // Pedras
-  { xMin: 33, xMax: 40, yMin: 86, yMax: 92 },
-  { xMin: 79, xMax: 86, yMin: 91, yMax: 97 },
-  { xMin: 59, xMax: 66, yMin: 74, yMax: 80 },
-
-  // Placa HELLO WORLD!
-  { xMin: 81, xMax: 90, yMin: 41, yMax: 49 },
+  // Colisões apenas nas bases das construções. Caminhos, praça e ponte ficam livres.
+  { xMin: 7, xMax: 25, yMin: 5, yMax: 29 },   // Estudos / casa azul
+  { xMin: 38, xMax: 61, yMin: 4, yMax: 29 },  // Vibe Mais Barbershop
+  { xMin: 72, xMax: 93, yMin: 6, yMax: 30 },  // Projetos
+  { xMin: 8, xMax: 27, yMin: 43, yMax: 59 },  // Mercado
+  { xMin: 66, xMax: 91, yMin: 66, yMax: 88 }, // Casa
+  // Margem extrema direita: água fora da área jogável.
+  { xMin: 98, xMax: 100, yMin: 0, yMax: 100 },
 ];
 
 const hasCollision = (x: number, y: number) => {
-  // Aproxima a posição dos pés do personagem.
   const footY = y + 2;
 
   return collisionAreas.some(
@@ -58,10 +46,18 @@ const hasCollision = (x: number, y: number) => {
   );
 };
 
+const isNearSign = (position: PlayerPosition) =>
+  Math.abs(position.x - 77) <= 9 &&
+  Math.abs(position.y - 27) <= 8;
+
+const isNearBarbershop = (position: PlayerPosition) =>
+  Math.abs(position.x - 50) <= 12 &&
+  Math.abs(position.y - 34) <= 9;
+
 function App() {
   const [player, setPlayer] = useState<PlayerPosition>({
-    x: 12,
-    y: 63,
+    x: 50,
+    y: 43,
   });
 
   const [facing, setFacing] = useState<
@@ -70,10 +66,21 @@ function App() {
 
   const [isMoving, setIsMoving] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-
+  const [dialogType, setDialogType] = useState<"barbershop" | "sign" | "study" | "projects" | "experience" | "home">("sign");
   const [message, setMessage] = useState(
     "Use WASD ou as setas para explorar."
   );
+
+  const playerRef = useRef(player);
+  const dialogOpenRef = useRef(dialogOpen);
+
+  useEffect(() => {
+    playerRef.current = player;
+  }, [player]);
+
+  useEffect(() => {
+    dialogOpenRef.current = dialogOpen;
+  }, [dialogOpen]);
 
   useEffect(() => {
     let movementTimer: number | undefined;
@@ -94,26 +101,41 @@ function App() {
 
       if (key === "e" || key === "enter") {
         event.preventDefault();
-        setDialogOpen((open) => !open);
-        setMessage("Você encontrou uma mensagem no mundo!");
+
+        if (dialogOpenRef.current) {
+          setDialogOpen(false);
+          setMessage("Continue explorando o portfólio.");
+          return;
+        }
+
+        if (isNearBarbershop(playerRef.current)) {
+          setDialogType("barbershop");
+          setDialogOpen(true);
+          setMessage("Você descobriu a história da Vibe Mais Barbershop.");
+        } else if (isNearSign(playerRef.current)) {
+          setDialogType("sign");
+          setDialogOpen(true);
+          setMessage("Você encontrou uma mensagem no mundo!");
+        } else {
+          setMessage("Aproxime-se da barbearia V+ ou da placa HELLO WORLD para interagir.");
+        }
+
         return;
       }
 
       if (key === "escape") {
         setDialogOpen(false);
+        setMessage("Continue explorando o portfólio.");
         return;
       }
 
       const directions: Record<string, Direction> = {
         arrowup: { x: 0, y: -3, facing: "up" },
         w: { x: 0, y: -3, facing: "up" },
-
         arrowdown: { x: 0, y: 3, facing: "down" },
         s: { x: 0, y: 3, facing: "down" },
-
         arrowleft: { x: -3, y: 0, facing: "left" },
         a: { x: -3, y: 0, facing: "left" },
-
         arrowright: { x: 3, y: 0, facing: "right" },
         d: { x: 3, y: 0, facing: "right" },
       };
@@ -128,23 +150,27 @@ function App() {
       setIsMoving(true);
       setDialogOpen(false);
 
-      setPlayer((current) => {
-        const nextX = clamp(current.x + direction.x, 5, 95);
-        const nextY = clamp(current.y + direction.y, 18, 80);
+      const current = playerRef.current;
 
-        // Se o próximo movimento colidir, mantém a posição atual.
-        if (hasCollision(nextX, nextY)) {
-          setMessage("Ops! Tem um obstáculo no caminho.");
-          return current;
+      const nextPosition: PlayerPosition = {
+        x: clamp(current.x + direction.x, 5, 95),
+        y: clamp(current.y + direction.y, 5, 96),
+      };
+
+      if (hasCollision(nextPosition.x, nextPosition.y)) {
+        setMessage("Ops! Tem um obstáculo no caminho.");
+      } else {
+        playerRef.current = nextPosition;
+        setPlayer(nextPosition);
+
+        if (isNearBarbershop(nextPosition)) {
+          setMessage("Pressione E para conhecer a história da Vibe Mais.");
+        } else if (isNearSign(nextPosition)) {
+          setMessage("Pressione E para ler a placa.");
+        } else {
+          setMessage("Boa! Continue explorando o portfólio.");
         }
-
-        setMessage("Boa! Continue explorando o portfólio.");
-
-        return {
-          x: nextX,
-          y: nextY,
-        };
-      });
+      }
 
       window.clearTimeout(movementTimer);
 
@@ -188,201 +214,45 @@ function App() {
         </span>
       </nav>
 
-      <section className="hero" aria-labelledby="hero-title">
+      <section className="hero hero-rpg" aria-labelledby="hero-title">
         <div className="hero-copy">
-          <p className="eyebrow">
-            <span className="prompt-symbol">&gt;</span> PORTFÓLIO / PLAYER 01
-          </p>
-
-          <h1 id="hero-title">
-            Olá, eu sou
-            <br />
-            <span className="name-highlight">Willian Almeida</span>
-          </h1>
-
-          <p className="hero-role">
-            Estudante de Análise e Desenvolvimento de Sistemas
-          </p>
-
-          <p className="hero-description">
-            Transformando curiosidade em código e ideias em soluções digitais.
-            Estou em busca de uma oportunidade para aprender, colaborar e
-            evoluir na área de tecnologia.
-          </p>
-
+          <p className="eyebrow"><span className="prompt-symbol">&gt;</span> PORTFÓLIO / PLAYER 01</p>
+          <h1 id="hero-title">Olá, eu sou<br /><span className="name-highlight">Willian Almeida</span></h1>
+          <p className="hero-role">Estudante de Análise e Desenvolvimento de Sistemas</p>
+          <p className="hero-description">Transformando curiosidade em código e ideias em soluções digitais. Estou em busca de uma oportunidade para aprender, colaborar e evoluir na área de tecnologia.</p>
           <div className="hero-actions">
-            <button
-              className="primary-button"
-              onClick={goToProjects}
-              type="button"
-            >
-              <span aria-hidden="true">▶</span> VER PROJETOS
-            </button>
-
-            <a className="secondary-button" href="#sobre">
-              CONHEÇA-ME <span aria-hidden="true">↘</span>
-            </a>
+            <button className="primary-button" onClick={goToProjects} type="button"><span aria-hidden="true">▶</span> VER PROJETOS</button>
+            <a className="secondary-button" href="#sobre">CONHEÇA-ME <span aria-hidden="true">↘</span></a>
           </div>
-
           <div className="quick-stats" aria-label="Resumo">
-            <div>
-              <strong>01</strong>
-              <span>PLAYER</span>
-            </div>
-            <div>
-              <strong>ADS</strong>
-              <span>FORMAÇÃO</span>
-            </div>
-            <div>
-              <strong>∞</strong>
-              <span>CURIOSIDADE</span>
-            </div>
+            <div><strong>01</strong><span>PLAYER</span></div><div><strong>ADS</strong><span>FORMAÇÃO</span></div><div><strong>∞</strong><span>CURIOSIDADE</span></div>
           </div>
         </div>
 
-        <div className="game-panel" aria-label="Área interativa de jogo">
-          <div className="game-panel-header">
-            <span>
-              <span className="tiny-dot" /> WORLD_01
-            </span>
-            <span>EXPLORAR.exe</span>
-          </div>
-
-          <div className="game-world">
-            <div className="sky-glow" aria-hidden="true" />
-            <div className="sun-pixel" aria-hidden="true" />
-            <div className="cloud cloud-one" aria-hidden="true" />
-            <div className="cloud cloud-two" aria-hidden="true" />
-
-            <div className="mountain mountain-back" aria-hidden="true" />
-            <div className="mountain mountain-front" aria-hidden="true" />
-
-            <div className="distant-trees" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-              <span />
-              <span />
+        <div className="game-panel game-panel-rpg" aria-label="Vila principal interativa">
+          <div className="game-panel-header"><span><span className="tiny-dot" /> WORLD_01 <i>|</i> VILA PRINCIPAL</span><span>EXPLORAR.EXE</span></div>
+          <div className="game-world game-world-rpg">
+            <img className="village-art" src="/vila-principal.png" alt="Mapa pixel art da vila principal, com casas, barbearia, mercado, jardins e cachoeira" draggable="false" />
+            <button className="map-hotspot hotspot-study" onClick={() => { setDialogType("study"); setDialogOpen(true); setMessage("Você descobriu minha jornada de estudos."); }} aria-label="Conhecer meus estudos">ESTUDOS<br />ADS</button>
+            <button className="map-hotspot hotspot-barber" onClick={() => { setDialogType("barbershop"); setDialogOpen(true); setMessage("Você descobriu a Vibe Mais Barbershop."); }} aria-label="Conhecer a Vibe Mais Barbershop"><b>V+</b><span>VIBE MAIS</span><small>BARBERSHOP</small></button>
+            <button className="map-hotspot hotspot-projects" onClick={() => { setDialogType("projects"); setDialogOpen(true); setMessage("Confira as missões que já desenvolvi."); }} aria-label="Ver projetos">▣<br />PROJETOS</button>
+            <button className="map-hotspot hotspot-market" onClick={() => { setDialogType("experience"); setDialogOpen(true); setMessage("Experiência construída na prática."); }} aria-label="Conhecer minha experiência">MERCADO</button>
+            <button className="map-hotspot hotspot-home" onClick={() => { setDialogType("home"); setDialogOpen(true); setMessage("Um pouco sobre minha história."); }} aria-label="Conhecer minha história">CASA</button>
+            <button className="map-hotspot hotspot-sign" onClick={() => { setDialogType("sign"); setDialogOpen(true); setMessage("Você encontrou uma mensagem no mundo!"); }} aria-label="Ler placa Hello World">HELLO<br />WORLD!</button>
+            <div className={`player-sprite facing-${facing}${isMoving ? " is-moving" : ""}`} style={{ left: `${player.x}%`, top: `${player.y}%` }} aria-label="Personagem Willian controlado pelo teclado" role="img">
+              <span className="sprite-shadow" /><span className="sprite-hair" /><span className="sprite-cap" /><span className="sprite-face"><i className="sprite-eyes" /><i className="sprite-nose" /></span><span className="sprite-beard" /><span className="sprite-neck" /><span className="sprite-body" /><span className="sprite-arm arm-left" /><span className="sprite-arm arm-right" /><span className="sprite-legs" /><span className="sprite-shoes" />
             </div>
-
-            <div className="ground" aria-hidden="true" />
-            <div className="path" aria-hidden="true" />
-
-            <div className="world-decoration grass-patches" aria-hidden="true">
-              <i className="grass grass-1" />
-              <i className="grass grass-2" />
-              <i className="grass grass-3" />
-              <i className="grass grass-4" />
-              <i className="grass grass-5" />
-              <i className="grass grass-6" />
-              <i className="grass grass-7" />
-              <i className="grass grass-8" />
-            </div>
-
-            <div className="world-decoration flowers" aria-hidden="true">
-              <i className="flower flower-1" />
-              <i className="flower flower-2" />
-              <i className="flower flower-3" />
-              <i className="flower flower-4" />
-              <i className="flower flower-5" />
-              <i className="flower flower-6" />
-            </div>
-
-            <div className="world-decoration rocks" aria-hidden="true">
-              <i className="rock rock-1" />
-              <i className="rock rock-2" />
-              <i className="rock rock-3" />
-            </div>
-
-            <div className="world-decoration bushes" aria-hidden="true">
-              <i className="bush bush-1" />
-              <i className="bush bush-2" />
-              <i className="bush bush-3" />
-              <i className="bush bush-4" />
-            </div>
-
-            <div className="world-decoration trees" aria-hidden="true">
-              <div className="pixel-tree tree-1">
-                <span className="tree-trunk" />
-                <span className="tree-crown" />
-              </div>
-              <div className="pixel-tree tree-2">
-                <span className="tree-trunk" />
-                <span className="tree-crown" />
-              </div>
-              <div className="pixel-tree tree-3">
-                <span className="tree-trunk" />
-                <span className="tree-crown" />
-              </div>
-            </div>
-
-            <div className="world-sign">
-              HELLO
-              <br />
-              WORLD!
-              <span className="sign-prompt">E</span>
-            </div>
-
-            <div
-              className={`player-sprite facing-${facing}${
-                isMoving ? " is-moving" : ""
-              }`}
-              style={{
-                left: `${player.x}%`,
-                top: `${player.y}%`,
-              }}
-              aria-label="Personagem controlado pelo teclado"
-              role="img"
-            >
-              <span className="sprite-shadow" />
-              <span className="sprite-hair" />
-              <span className="sprite-face">
-                <i className="sprite-eyes" />
-                <i className="sprite-nose" />
-              </span>
-              <span className="sprite-neck" />
-              <span className="sprite-body" />
-              <span className="sprite-arm arm-left" />
-              <span className="sprite-arm arm-right" />
-              <span className="sprite-legs" />
-              <span className="sprite-shoes" />
-            </div>
-
             {dialogOpen && (
-              <div
-                className="game-dialog"
-                role="dialog"
-                aria-label="Mensagem da placa"
-              >
-                <p className="eyebrow">MENSAGEM ENCONTRADA</p>
-                <p className="dialog-title">Olá, explorador!</p>
-                <p>
-                  Eu sou Willian, estudante de ADS e desenvolvedor em formação.
-                </p>
-                <p>
-                  Minha próxima missão é transformar ideias em projetos reais.
-                </p>
-                <small>Pressione E ou ESC para fechar.</small>
+              <div className="game-dialog game-dialog-docked dialog-expanded" role="dialog" aria-live="polite" aria-modal="false">
+                <div className="dialog-copy">
+                  <p className="dialog-title">{({ barbershop: "V+ — Vibe Mais Barbershop", sign: "Willian.exe", study: "Estudos e formação", projects: "Projetos em destaque", experience: "Experiência profissional", home: "Minha história" } as Record<string, string>)[dialogType]}</p>
+                  <p>{({ barbershop: "Empreendedor e barbeiro há cinco anos, construí a Vibe Mais Barbershop com trabalho, dedicação e vontade de crescer. Essa experiência me ensinou atendimento, organização e resolução de problemas.", sign: "Sou Willian, estudante de ADS e desenvolvedor em formação. Minha próxima missão é transformar ideias em projetos reais.", study: "Sou estudante de Análise e Desenvolvimento de Sistemas, construindo minha base em programação, lógica e desenvolvimento de soluções digitais.", projects: "Explore projetos práticos que fazem parte da minha evolução, incluindo aplicações web e integração com APIs.", experience: "Minha experiência como empreendedor fortaleceu minha comunicação, disciplina, organização e capacidade de resolver problemas reais.", home: "Sou Willian Almeida, estudante de ADS, empreendedor e profissional em transição para a tecnologia. Estou em busca de uma oportunidade para aprender e contribuir." } as Record<string, string>)[dialogType]}</p>
+                  <small>Pressione E ou ESC para fechar.</small>
+                </div>
               </div>
             )}
-
-            <div className="game-hint" aria-live="polite">
-              <span>▲</span> {message}
-            </div>
           </div>
-
-          <div className="game-controls">
-            <span>
-              <kbd>W</kbd>
-              <kbd>A</kbd>
-              <kbd>S</kbd>
-              <kbd>D</kbd> MOVER
-            </span>
-            <span className="control-arrows">↑ ↓ ← →</span>
-            <span className="interact-hint">
-              <kbd>E</kbd> INTERAGIR
-            </span>
-          </div>
+          <div className="game-controls"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> MOVER</span><span className="control-arrows"><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd> MOVER</span><span className="interact-hint"><kbd>E</kbd> INTERAGIR</span><span className="menu-hint"><kbd>ESC</kbd> MENU</span></div>
         </div>
       </section>
 

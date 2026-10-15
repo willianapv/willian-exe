@@ -327,8 +327,8 @@ a:focus-visible {
   position: relative;
   isolation: isolate;
   width: 100%;
-  aspect-ratio: 1.12 / 1;
-  min-height: 290px;
+  aspect-ratio: 3 / 2;
+  min-height: 320px;
   overflow: hidden;
   background: linear-gradient(
     180deg,
@@ -692,6 +692,169 @@ a:focus-visible {
   background: #66a45b;
   content: "";
 }
+
+
+
+/* VIBE MAIS BARBERSHOP — CONSTRUÇÃO TOP-DOWN */
+.barbershop-building {
+  position: absolute;
+  z-index: 5;
+  top: 36%;
+  left: 14%;
+  width: 29%;
+  height: 22%;
+  min-width: 112px;
+  max-width: 190px;
+  image-rendering: pixelated;
+  filter: drop-shadow(4px 5px 0 #20352a55);
+}
+
+.barbershop-roof {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 72%;
+  overflow: hidden;
+  border: 4px solid #4b2630;
+  background: repeating-linear-gradient(
+    0deg,
+    #6f293b 0 9px,
+    #8f3545 9px 13px,
+    #572431 13px 16px
+  );
+  box-shadow: inset 5px 0 0 #a64a50, inset -5px 0 0 #3b202b, 0 4px 0 #3d2728;
+}
+
+.roof-shine {
+  position: absolute;
+  top: 7px;
+  left: 9px;
+  width: 28%;
+  height: 5px;
+  background: #c86b65;
+  box-shadow: 0 8px 0 #c86b65;
+  opacity: 0.8;
+}
+
+.roof-stripe {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #3e202b;
+  opacity: 0.7;
+}
+
+.roof-stripe-one { left: 27%; }
+.roof-stripe-two { left: 51%; }
+.roof-stripe-three { left: 75%; }
+
+.vplus-sign {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 39px;
+  height: 27px;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 3px solid #281d20;
+  background: #e9c85e;
+  color: #3a2027;
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 3px 3px 0 #3b202b;
+}
+
+.barbershop-front {
+  position: absolute;
+  right: 4px;
+  bottom: 0;
+  left: 4px;
+  height: 34%;
+  border: 3px solid #624638;
+  border-top: 0;
+  background: #d4b783;
+  box-shadow: inset 0 -4px 0 #a27d58;
+}
+
+.shop-window {
+  position: absolute;
+  top: 3px;
+  width: 19%;
+  height: 65%;
+  border: 3px solid #5b3a35;
+  background: #91c5bd;
+  box-shadow: inset 0 0 0 2px #d9e5bf;
+}
+
+.shop-window-left { left: 7%; }
+.shop-window-right { right: 7%; }
+
+.shop-door {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 22%;
+  height: 85%;
+  transform: translateX(-50%);
+  border: 3px solid #4c302c;
+  border-bottom: 0;
+  background: #6b4136;
+  box-shadow: inset 4px 0 0 #8e5d46;
+}
+
+.shop-door::after {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  width: 3px;
+  height: 3px;
+  background: #e9c85e;
+  content: "";
+}
+
+.shop-shadow {
+  position: absolute;
+  z-index: -1;
+  right: -4px;
+  bottom: -5px;
+  left: -4px;
+  height: 7px;
+  background: #29432d66;
+}
+
+.shop-prompt {
+  position: absolute;
+  z-index: 8;
+  top: -24px;
+  left: 50%;
+  padding: 5px 7px;
+  transform: translateX(-50%);
+  border: 1px solid #253724;
+  background: var(--accent);
+  color: #172016;
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 2px 2px 0 #243824;
+  animation: shop-prompt-bob 800ms steps(2, end) infinite alternate;
+}
+
+.barbershop-building.is-interactable .barbershop-roof {
+  border-color: #e9c85e;
+}
+
+@keyframes shop-prompt-bob {
+  from { margin-top: 0; }
+  to { margin-top: -3px; }
+}
+
 
 /* PLACA */
 
@@ -1469,6 +1632,18 @@ kbd {
     aspect-ratio: 0.95 / 1;
   }
 
+  .barbershop-building {
+    left: 10%;
+    width: 32%;
+    min-width: 100px;
+  }
+
+  .vplus-sign {
+    width: 32px;
+    height: 23px;
+    font-size: 12px;
+  }
+
   .sun-pixel {
     transform: scale(0.8);
     transform-origin: top right;
@@ -1586,10 +1761,654 @@ kbd {
   }
 
   .game-world {
-    min-height: 240px;
+    aspect-ratio: 3 / 2;
+    min-height: 0;
   }
 
   .game-hint {
     font-size: 8px;
+  }
+}
+
+
+/* ===== MAPA RPG ILUSTRADO — NOVA VERSÃO ===== */
+.game-world {
+  background: #477943 url("/rpg-village-map.png") center / 100% 100% no-repeat !important;
+  image-rendering: pixelated;
+}
+.game-world > .sky-glow,
+.game-world > .sun-pixel,
+.game-world > .cloud,
+.game-world > .mountain,
+.game-world > .distant-trees,
+.game-world > .ground,
+.game-world > .path,
+.game-world > .world-decoration {
+  display: none !important;
+}
+/* A arte já contém os prédios e a placa; estas áreas invisíveis preservam as interações. */
+.barbershop-building {
+  position: absolute !important;
+  left: 39% !important;
+  top: 7% !important;
+  width: 22% !important;
+  height: 27% !important;
+  max-width: none !important;
+  filter: none !important;
+  background: transparent !important;
+  pointer-events: none;
+}
+.barbershop-roof,
+.barbershop-front,
+.shop-shadow {
+  display: none !important;
+}
+.vplus-sign {
+  display: none !important;
+}
+.shop-prompt {
+  position: absolute !important;
+  top: 88% !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  white-space: nowrap;
+  z-index: 12;
+}
+.barbershop-building.is-interactable {
+  outline: 2px dashed #d8ff70;
+  outline-offset: 2px;
+}
+.world-sign {
+  left: 70% !important;
+  top: 18% !important;
+  width: 13% !important;
+  height: 12% !important;
+  opacity: 0;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.world-sign::before {
+  display: none !important;
+}
+.sign-prompt {
+  opacity: 1;
+}
+.player-sprite {
+  z-index: 8;
+}
+.game-dialog {
+  z-index: 20;
+}
+@media (max-width: 640px) {
+  .game-world {
+    background-size: 100% 100% !important;
+  }
+  .barbershop-building {
+    left: 39% !important;
+    top: 7% !important;
+    width: 22% !important;
+    min-width: 0 !important;
+    height: 27% !important;
+  }
+}
+
+
+/* ===== AJUSTES DE JOGABILIDADE E PERSONAGEM ===== */
+.game-world {
+  aspect-ratio: 3 / 2;
+  min-height: 0;
+  background-size: 100% 100% !important;
+}
+
+.player-sprite {
+  width: 38px;
+  height: 54px;
+  image-rendering: pixelated;
+}
+
+/* Boné preto com a inicial W, em camadas pixeladas. */
+.sprite-cap {
+  position: absolute;
+  z-index: 5;
+  top: -1px;
+  left: 6px;
+  width: 25px;
+  height: 8px;
+  background: #171b19;
+  border: 2px solid #080b0a;
+  box-shadow: 0 3px 0 #252c28, 5px 7px 0 -2px #111513;
+}
+.sprite-cap::before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: 5px;
+  width: 29px;
+  height: 4px;
+  background: #242b27;
+  border-bottom: 2px solid #080b0a;
+}
+.sprite-cap i {
+  position: absolute;
+  z-index: 2;
+  top: -1px;
+  left: 8px;
+  color: #d5ff68;
+  font: 900 8px/8px monospace;
+  font-style: normal;
+}
+
+/* Barba e bigode castanho-escuros; ficam abaixo dos olhos e do nariz. */
+.sprite-beard {
+  position: absolute;
+  z-index: 3;
+  top: 16px;
+  left: 10px;
+  width: 18px;
+  height: 8px;
+  background: #302019;
+  box-shadow: -2px -1px 0 #302019, 2px -1px 0 #302019,
+    -1px 4px 0 #302019, 1px 6px 0 #302019,
+    4px 7px 0 #302019, 7px 7px 0 #302019;
+  clip-path: polygon(0 0, 25% 0, 25% 20%, 75% 20%, 75% 0, 100% 0, 100% 60%, 75% 60%, 75% 85%, 55% 100%, 35% 100%, 25% 80%, 0 80%);
+}
+.sprite-beard::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 4px;
+  width: 10px;
+  height: 4px;
+  background: #302019;
+}
+.sprite-beard::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  width: 3px;
+  height: 2px;
+  background: #d89c74;
+  box-shadow: 11px 0 0 #d89c74;
+}
+.player-sprite.facing-up .sprite-beard { display: none; }
+.player-sprite.facing-up .sprite-cap { top: 0; }
+
+/* A área de interação acompanha a porta da barbearia no mapa novo. */
+.barbershop-building {
+  left: 39% !important;
+  top: 7% !important;
+  width: 22% !important;
+  height: 27% !important;
+}
+.shop-prompt {
+  top: 92% !important;
+}
+.world-sign {
+  left: 70% !important;
+  top: 18% !important;
+  width: 14% !important;
+  height: 13% !important;
+}
+
+@media (max-width: 640px) {
+  .game-world {
+    aspect-ratio: 3 / 2;
+    min-height: 0;
+  }
+  .player-sprite {
+    transform: translate(-50%, -50%) scale(.82);
+    transform-origin: center;
+  }
+  .player-sprite.facing-left {
+    transform: translate(-50%, -50%) scaleX(-1) scale(.82);
+  }
+}
+
+/* ===== DIÁLOGO FIXO NA BASE DO MAPA, COMO NA REFERÊNCIA ===== */
+.game-world {
+  padding-bottom: 0;
+}
+.game-hint {
+  display: none !important;
+}
+.game-dialog.game-dialog-docked {
+  top: auto !important;
+  right: 1.2% !important;
+  bottom: 1.6% !important;
+  left: 1.2% !important;
+  min-height: 78px;
+  padding: 10px 42px 10px 12px !important;
+  transform: none !important;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 2px solid #d8ff70 !important;
+  border-radius: 9px;
+  background: rgba(10, 17, 19, .97) !important;
+  box-shadow: 0 4px 0 rgba(0,0,0,.55), inset 0 0 0 1px #e5f4d044;
+  color: #f5f5ed;
+  z-index: 20;
+}
+.dialog-avatar {
+  position: relative;
+  flex: 0 0 58px;
+  height: 58px;
+  overflow: hidden;
+  border: 1px solid #58644a;
+  border-radius: 5px;
+  background: linear-gradient(#1a241f, #0a100e);
+  image-rendering: pixelated;
+}
+.avatar-face {
+  position: absolute;
+  top: 19px;
+  left: 19px;
+  width: 20px;
+  height: 22px;
+  background: #e4a16f;
+  box-shadow: -4px 6px 0 #c78055, 4px 6px 0 #c78055;
+}
+.avatar-hair {
+  position: absolute;
+  top: 13px;
+  left: 17px;
+  width: 24px;
+  height: 9px;
+  background: #38251d;
+  box-shadow: -3px 5px 0 #38251d, 3px 4px 0 #38251d;
+}
+.avatar-cap {
+  position: absolute;
+  z-index: 3;
+  top: 8px;
+  left: 14px;
+  width: 30px;
+  height: 10px;
+  background: #101413;
+  border: 2px solid #030605;
+  box-shadow: 4px 7px 0 -3px #101413;
+}
+.avatar-cap::after {
+  content: "";
+  position: absolute;
+  top: 7px;
+  left: -3px;
+  width: 34px;
+  height: 4px;
+  background: #252c28;
+}
+.avatar-cap i {
+  position: absolute;
+  top: -1px;
+  left: 9px;
+  z-index: 2;
+  color: #d8ff70;
+  font: 900 9px/9px monospace;
+  font-style: normal;
+}
+.avatar-beard {
+  position: absolute;
+  z-index: 4;
+  top: 32px;
+  left: 19px;
+  width: 20px;
+  height: 13px;
+  background: #302019;
+  clip-path: polygon(0 0, 25% 0, 25% 20%, 75% 20%, 75% 0, 100% 0, 100% 60%, 75% 60%, 65% 85%, 50% 100%, 35% 85%, 25% 60%, 0 60%);
+}
+.avatar-beard::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  width: 3px;
+  height: 3px;
+  background: #f0c18e;
+  box-shadow: 11px 0 #f0c18e;
+}
+.avatar-body {
+  position: absolute;
+  bottom: -5px;
+  left: 14px;
+  width: 32px;
+  height: 17px;
+  background: #294d8c;
+  border-top: 3px solid #6285ca;
+}
+.dialog-copy {
+  flex: 1;
+  min-width: 0;
+}
+.game-dialog.game-dialog-docked .dialog-title {
+  margin: 0 0 5px !important;
+  color: #d8ff70;
+  font: 700 14px/1.3 var(--mono);
+}
+.game-dialog.game-dialog-docked .dialog-copy p:not(.dialog-title) {
+  margin: 0 !important;
+  color: #f4f2ea;
+  font: 12px/1.55 var(--mono);
+}
+.dialog-caret {
+  position: absolute;
+  right: 13px;
+  bottom: 13px;
+  color: #f5f5ed;
+  font-size: 12px;
+}
+.game-dialog-docked.dialog-expanded {
+  min-height: 96px;
+}
+@media (max-width: 640px) {
+  .game-dialog.game-dialog-docked {
+    min-height: 62px;
+    gap: 8px;
+    padding: 7px 24px 7px 7px !important;
+  }
+  .dialog-avatar {
+    flex-basis: 42px;
+    height: 46px;
+    transform: scale(.9);
+    transform-origin: center;
+  }
+  .game-dialog.game-dialog-docked .dialog-title { font-size: 10px !important; }
+  .game-dialog.game-dialog-docked .dialog-copy p:not(.dialog-title) { font-size: 8px; line-height: 1.35; }
+  .dialog-caret { right: 7px; bottom: 8px; }
+}
+
+
+/* ===== AJUSTE DE PROPORÇÕES — APROXIMAÇÃO DA REFERÊNCIA ===== */
+@media (min-width: 1101px) {
+  .site-shell {
+    width: min(1480px, calc(100% - 64px));
+  }
+
+  .topbar {
+    min-height: 60px;
+  }
+
+  .hero {
+    grid-template-columns: minmax(270px, 0.62fr) minmax(0, 1.78fr);
+    gap: 28px;
+    align-items: center;
+    padding: 14px 0 36px;
+  }
+
+  .hero h1 {
+    font-size: clamp(38px, 3.3vw, 58px);
+    letter-spacing: -2.6px;
+  }
+
+  .hero-description {
+    max-width: 390px;
+  }
+
+  .game-panel {
+    width: 100%;
+    border-radius: 14px;
+    box-shadow: 0 0 0 4px #171c14, 0 0 0 5px #30362c, 0 20px 65px #00000045;
+  }
+
+  .game-panel-header {
+    min-height: 40px;
+    padding-inline: 18px;
+    font-size: 10px;
+  }
+
+  .game-world {
+    aspect-ratio: 1.38 / 1 !important;
+    min-height: 0 !important;
+    background-size: cover !important;
+    background-position: center center !important;
+  }
+
+  .game-controls {
+    min-height: 54px;
+    padding: 9px 18px;
+    font-size: 10px;
+  }
+
+  .game-controls kbd {
+    width: 30px;
+    height: 30px;
+  }
+
+  .game-dialog.game-dialog-docked {
+    right: 1% !important;
+    bottom: 1.2% !important;
+    left: 1% !important;
+    min-height: 92px;
+    padding: 10px 54px 10px 12px !important;
+    gap: 16px;
+    border-radius: 10px;
+  }
+
+  .dialog-avatar {
+    flex-basis: 82px;
+    height: 82px;
+  }
+
+  .game-dialog.game-dialog-docked .dialog-title {
+    font-size: 18px;
+  }
+
+  .game-dialog.game-dialog-docked .dialog-copy p:not(.dialog-title) {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .dialog-caret {
+    right: 18px;
+    bottom: 18px;
+    font-size: 16px;
+  }
+
+  .player-sprite {
+    width: 46px;
+    height: 62px;
+    transform: translate(-50%, -50%) scale(1.12);
+    transform-origin: center;
+  }
+
+  .player-sprite.facing-left {
+    transform: translate(-50%, -50%) scaleX(-1) scale(1.12);
+  }
+}
+
+/* Boné liso e preto: sem inicial, símbolo ou texto. */
+.sprite-cap {
+  background: #101211 !important;
+  border: 2px solid #050606 !important;
+  box-shadow: 0 3px 0 #101211, 5px 7px 0 -2px #080909 !important;
+}
+.sprite-cap::before {
+  background: #171a18 !important;
+  border-bottom: 2px solid #050606 !important;
+}
+.sprite-cap i,
+.avatar-cap i {
+  display: none !important;
+}
+.avatar-cap {
+  background: #101211 !important;
+  border: 2px solid #050606 !important;
+  box-shadow: 4px 7px 0 -3px #101211 !important;
+}
+.avatar-cap::after {
+  background: #171a18 !important;
+}
+
+/* Barba cheia e conectada ao maxilar, sem bigode isolado exagerado. */
+.sprite-beard {
+  top: 15px !important;
+  left: 9px !important;
+  width: 20px !important;
+  height: 12px !important;
+  background: #302019 !important;
+  clip-path: polygon(0 0, 22% 8%, 22% 30%, 0 30%, 0 58%, 18% 58%, 18% 78%, 36% 78%, 36% 92%, 50% 100%, 64% 92%, 64% 78%, 82% 78%, 82% 58%, 100% 58%, 100% 30%, 78% 30%, 78% 8%, 100% 0, 100% 25%, 82% 25%, 82% 45%, 18% 45%, 18% 25%, 0 25%);
+  box-shadow: none !important;
+}
+.sprite-beard::before {
+  top: 1px !important;
+  left: 4px !important;
+  width: 12px !important;
+  height: 3px !important;
+  background: #302019 !important;
+}
+.sprite-beard::after {
+  display: none !important;
+}
+.avatar-beard {
+  top: 31px !important;
+  left: 18px !important;
+  width: 22px !important;
+  height: 15px !important;
+  background: #302019 !important;
+  clip-path: polygon(0 0, 20% 8%, 20% 28%, 0 28%, 0 58%, 18% 58%, 18% 78%, 36% 78%, 36% 92%, 50% 100%, 64% 92%, 64% 78%, 82% 78%, 82% 58%, 100% 58%, 100% 28%, 80% 28%, 80% 8%, 100% 0, 100% 25%, 82% 25%, 82% 45%, 18% 45%, 18% 25%, 0 25%);
+}
+.avatar-beard::before {
+  display: none !important;
+}
+
+@media (max-width: 1100px) and (min-width: 901px) {
+  .site-shell { width: min(100% - 40px, 1200px); }
+  .hero { grid-template-columns: minmax(250px, .75fr) minmax(0, 1.25fr); gap: 24px; padding: 34px 0 54px; }
+  .game-world { aspect-ratio: 1.25 / 1 !important; }
+}
+@media (max-width: 900px) {
+  .site-shell { width: min(100% - 32px, 720px); }
+  .hero { gap: 30px; padding-top: 36px; }
+  .game-world { aspect-ratio: 1.35 / 1 !important; }
+}
+@media (max-width: 640px) {
+  .game-world { aspect-ratio: 1.05 / 1 !important; }
+  .game-dialog.game-dialog-docked { min-height: 62px; }
+  .dialog-avatar { flex-basis: 42px; height: 46px; }
+}
+
+
+/* ===== VILA PRINCIPAL RPG — composição de referência ===== */
+.site-shell { width:min(100% - 28px, 1510px); }
+.topbar { min-height:60px; border-bottom:1px solid #252d24; }
+.hero-rpg { display:grid; grid-template-columns:minmax(270px, 300px) minmax(0,1fr); gap:26px; align-items:center; min-height:calc(100vh - 60px); padding:14px 0 20px; }
+.hero-rpg .hero-copy { padding:18px 8px 18px 18px; }
+.hero-rpg .hero-copy h1 { font-size:clamp(30px,3.1vw,48px); line-height:1.12; letter-spacing:-.055em; }
+.hero-rpg .hero-description { font-size:13px; line-height:1.75; }
+.game-panel-rpg { min-width:0; width:100%; padding:5px; border:2px solid #38453c; border-radius:19px; background:#090e0d; box-shadow:0 0 0 3px #070a09,0 12px 40px #0008; overflow:hidden; }
+.game-panel-rpg .game-panel-header { min-height:36px; padding:0 14px; display:flex; align-items:center; justify-content:space-between; background:#090e0d; color:#f5f5ed; font-family:var(--mono); font-size:12px; text-transform:uppercase; }
+.game-panel-header i { color:#6e786b; font-style:normal; margin:0 16px; }
+.game-world-rpg { position:relative; width:100%; aspect-ratio:1.25/1; min-height:0; overflow:hidden; background:#286b36; image-rendering:pixelated; }
+.village-art { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; image-rendering:pixelated; user-select:none; pointer-events:none; }
+.map-hotspot { position:absolute; z-index:7; transform:translate(-50%,-50%); border:2px solid #d8a95a; border-radius:2px; background:#151918ee; color:#fff; box-shadow:0 3px 0 #0008; padding:4px 7px; font-family:var(--mono); font-size:clamp(8px,.95vw,14px); line-height:1.15; text-align:center; cursor:pointer; text-shadow:1px 2px #000; transition:filter .15s,transform .15s; }
+.map-hotspot:hover,.map-hotspot:focus-visible { filter:brightness(1.25); transform:translate(-50%,-50%) scale(1.06); outline:2px solid #d4ff5c; outline-offset:2px; }
+.hotspot-study { left:16%; top:19%; }
+.hotspot-barber { left:49%; top:19%; display:flex; flex-direction:column; align-items:center; gap:1px; border-color:#e6b53c; min-width:88px; }
+.hotspot-barber b { font-family:Arial,sans-serif; font-size:clamp(22px,2.6vw,38px); line-height:.95; color:#ffdf39; }
+.hotspot-barber span { color:#ffe938; font-weight:900; }
+.hotspot-barber small { font-size:8px; letter-spacing:2px; }
+.hotspot-projects { left:80%; top:21%; }
+.hotspot-market { left:16%; top:52%; }
+.hotspot-home { left:79%; top:78%; }
+.hotspot-sign { left:72%; top:49%; }
+.game-world-rpg .player-sprite { z-index:8; width:34px; height:64px; transform:translate(-50%,-50%) scale(.9); transform-origin:center; }
+.game-dialog-docked { position:absolute; z-index:10; left:9px; right:9px; bottom:8px; top:auto; transform:none; min-height:92px; display:flex; align-items:center; gap:16px; padding:7px 16px 7px 8px; border:2px solid #c9f36a; border-radius:8px; background:rgba(7,15,17,.97); box-shadow:0 4px 0 #0008; }
+.dialog-avatar { position:relative; flex:0 0 112px; align-self:stretch; min-height:82px; overflow:hidden; border-right:1px solid #27352c; }
+.dialog-avatar span { position:absolute; display:block; image-rendering:pixelated; }
+.avatar-hair { left:28px; top:8px; width:49px; height:22px; background:#171512; border:3px solid #050505; }
+.avatar-cap { left:26px; top:4px; width:54px; height:14px; background:#101210; border:3px solid #050505; }
+.avatar-face { left:33px; top:25px; width:39px; height:35px; background:#c77d43; box-shadow:inset 0 -8px #a75a2c; }
+.avatar-beard { left:34px; top:43px; width:38px; height:18px; background:#211913; clip-path:polygon(0 0,100% 0,88% 70%,65% 100%,30% 100%,10% 70%); }
+.avatar-body { left:24px; top:59px; width:58px; height:35px; background:#17242b; border-top:5px solid #070a0a; }
+.dialog-copy { min-width:0; flex:1; }
+.dialog-copy p { margin:0; }
+.dialog-copy .dialog-title { margin-bottom:8px; color:#d1ff42; font-family:var(--mono); font-weight:700; font-size:clamp(13px,1.4vw,20px); }
+.dialog-copy p:not(.dialog-title) { color:#f3f2ec; font-family:var(--mono); font-size:clamp(10px,1.15vw,16px); line-height:1.45; }
+.dialog-caret { border:0; background:transparent; color:#f7f7ef; font-size:20px; cursor:pointer; align-self:flex-end; }
+.game-controls { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; min-height:50px; padding:7px 18px; color:#f0f0e8; font-family:var(--mono); font-size:11px; }
+.game-controls span { display:flex; align-items:center; gap:7px; }
+.game-controls kbd { display:inline-grid; place-items:center; min-width:30px; height:30px; padding:0 6px; border:1px solid #6e9a12; border-radius:5px; color:#d2ff43; background:#10170e; font:700 12px var(--mono); }
+.game-controls .control-arrows { gap:7px; }
+@media (min-width:1500px) { .hero-rpg { grid-template-columns:300px minmax(0,1fr); gap:28px; } }
+@media (max-width:900px) { .hero-rpg { grid-template-columns:1fr; min-height:0; gap:16px; padding-top:22px; } .hero-rpg .hero-copy { padding:12px 8px; } .hero-rpg .hero-copy h1 { font-size:38px; } .game-world-rpg { aspect-ratio:1/1; } .game-controls { justify-content:center; } .dialog-avatar { flex-basis:72px; } .avatar-hair { left:15px; } .avatar-cap { left:13px; } .avatar-face { left:20px; } .avatar-beard { left:21px; } .avatar-body { left:11px; } }
+@media (max-width:520px) { .site-shell { width:calc(100% - 20px); } .nav-links { display:none; } .game-world-rpg { aspect-ratio:.86/1; } .game-panel-rpg .game-panel-header { font-size:9px; } .game-panel-header i { margin:0 5px; } .game-dialog-docked { min-height:88px; gap:8px; padding:6px; } .dialog-avatar { flex-basis:52px; min-height:70px; } .avatar-hair { left:5px; width:40px; } .avatar-cap { left:3px; width:44px; } .avatar-face { left:10px; width:34px; } .avatar-beard { left:11px; width:33px; } .avatar-body { left:1px; width:54px; } .dialog-copy p:not(.dialog-title) { font-size:9px; } .game-controls { gap:8px; padding:6px; font-size:9px; } .game-controls kbd { min-width:23px; height:25px; } .hotspot-barber { min-width:60px; } .hotspot-barber small { font-size:5px; letter-spacing:1px; } }
+
+
+/* ===== AJUSTES DE REFINAMENTO — layout, retrato e caminhos ===== */
+@media (min-width: 901px) {
+  .site-shell { width: min(100% - 40px, 1510px); }
+  .hero-rpg {
+    grid-template-columns: minmax(270px, 0.78fr) minmax(0, 2.22fr);
+    gap: clamp(18px, 2vw, 30px); min-height: 0; align-items: center;
+    padding: 18px 0 24px;
+  }
+  .hero-rpg .hero-copy { padding: 16px 8px 16px 12px; }
+  .hero-rpg .hero-copy h1 { font-size: clamp(32px, 2.7vw, 46px); }
+  .game-panel-rpg { align-self: center; }
+  .game-world-rpg { height: clamp(360px, 68vh, 790px); aspect-ratio: auto; }
+  .village-art { object-fit: fill; }
+}
+.game-dialog-docked { min-height: 88px; }
+.dialog-avatar { flex: 0 0 100px; min-height: 82px; background: linear-gradient(180deg, #101814, #17221b); }
+.avatar-face { z-index: 2; overflow: visible; box-shadow: inset 0 -7px #a75a2c, inset 5px 0 #d99151, inset -5px 0 #d99151; }
+.avatar-eyes, .avatar-nose, .avatar-mouth { position: absolute; display: block; font-style: normal; }
+.avatar-eyes { left: 6px; top: 12px; width: 27px; height: 4px; background: linear-gradient(90deg, #17120e 0 22%, transparent 22% 66%, #17120e 66% 88%, transparent 88%); }
+.avatar-nose { left: 17px; top: 17px; width: 6px; height: 5px; background: #e6a064; box-shadow: 3px 3px #7c3f22; }
+.avatar-mouth { left: 11px; top: 24px; width: 20px; height: 4px; background: #26160f; }
+.avatar-beard { z-index: 3; top: 42px; left: 32px; width: 40px; height: 18px; background: #241810; clip-path: polygon(0 0, 18% 12%, 18% 34%, 0 34%, 8% 70%, 30% 86%, 50% 100%, 72% 86%, 92% 70%, 100% 34%, 82% 34%, 82% 12%, 100% 0, 100% 26%, 80% 26%, 80% 48%, 20% 48%, 20% 26%, 0 26%); }
+@media (max-width: 900px) {
+  .hero-rpg { min-height: 0; }
+  .game-world-rpg { height: clamp(340px, 58vh, 620px); aspect-ratio: auto; }
+  .village-art { object-fit: fill; }
+}
+@media (max-width: 520px) {
+  .game-world-rpg { height: 64vh; min-height: 390px; aspect-ratio: auto; }
+  .dialog-avatar { flex-basis: 56px; }
+  .avatar-hair { left: 7px; } .avatar-cap { left: 5px; }
+  .avatar-face { left: 12px; } .avatar-beard { left: 13px; }
+  .avatar-body { left: 3px; }
+}
+
+
+/* V4 — diálogo somente durante interações, compacto e sem retrato incorreto */
+.game-dialog-docked {
+  top: auto !important;
+  bottom: 54px !important;
+  left: 2% !important;
+  right: 2% !important;
+  width: auto;
+  min-height: 0 !important;
+  max-height: 24%;
+  overflow-y: auto;
+  padding: 10px 14px !important;
+  gap: 0 !important;
+  border-width: 2px !important;
+  border-radius: 7px !important;
+  transform: none !important;
+}
+.game-dialog-docked .dialog-copy { min-width: 0; }
+.game-dialog-docked .dialog-title {
+  font-size: clamp(11px, 1vw, 15px) !important;
+  line-height: 1.25 !important;
+  margin: 0 0 4px !important;
+}
+.game-dialog-docked .dialog-copy p:not(.dialog-title) {
+  font-size: clamp(10px, .82vw, 12px) !important;
+  line-height: 1.4 !important;
+  margin: 0 !important;
+}
+.game-dialog-docked small {
+  display: block;
+  margin-top: 5px;
+  font-size: 9px;
+}
+@media (max-width: 700px) {
+  .game-dialog-docked {
+    bottom: 46px !important;
+    left: 2% !important;
+    right: 2% !important;
+    max-height: 30%;
+    padding: 8px 10px !important;
   }
 }
