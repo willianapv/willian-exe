@@ -1,12 +1,16 @@
-﻿WILLIAN.EXE — ajustes v4
+WILLIAN.EXE — interações v6
 
-- A caixa de diálogo fica oculta ao carregar.
-- Pressione E perto da placa ou da V+ para abrir o diálogo; E ou ESC fecha.
-- A caixa é compacta, fica na parte inferior do mapa e não inclui o retrato incorreto.
-- Colisões, cenário e navegação foram preservados da versão anterior.
+- Interações exclusivamente pelo teclado: aproxime-se da construção e pressione E.
+- Os rótulos das construções não respondem mais a cliques do mouse.
+- Ao chegar perto de um ponto de interação, aparece a indicação “E — PRESSIONE PARA INTERAGIR”.
+- WASD ou as setas movimentam o personagem; E abre/fecha o diálogo; ESC fecha.
+- Mantidos o mapa, as áreas de colisão e os diálogos da versão anterior.
 
 Instalação:
 1. Faça backup de src/App.tsx e src/App.css.
-2. Substitua pelos arquivos atualizados.
-3. Mantenha public/vila-principal.png.
-4. Teste no navegador.
+2. Substitua esses dois arquivos pelos arquivos deste pacote.
+3. Preserve public/vila-principal.png.
+4. Execute npm run dev e teste aproximando-se de cada construção.
+
+
+Correção v6.1: ajustado o tipo de diálogo do mercado para abrir o conteúdo de experiência/café corretamente.
