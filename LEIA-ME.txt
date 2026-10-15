@@ -1,16 +1,19 @@
-WILLIAN.EXE — interações v6
+WILLIAN.EXE — CAIXA DE CORREIO E CONTATOS ATUALIZADOS
 
-- Interações exclusivamente pelo teclado: aproxime-se da construção e pressione E.
-- Os rótulos das construções não respondem mais a cliques do mouse.
-- Ao chegar perto de um ponto de interação, aparece a indicação “E — PRESSIONE PARA INTERAGIR”.
-- WASD ou as setas movimentam o personagem; E abre/fecha o diálogo; ESC fecha.
-- Mantidos o mapa, as áreas de colisão e os diálogos da versão anterior.
+Esta atualização mantém as interações da vila e centraliza os contatos no mapa e na seção CONTATO da página.
 
-Instalação:
-1. Faça backup de src/App.tsx e src/App.css.
-2. Substitua esses dois arquivos pelos arquivos deste pacote.
-3. Preserve public/vila-principal.png.
-4. Execute npm run dev e teste aproximando-se de cada construção.
+Canais configurados:
+- WhatsApp: +55 41 99756-7138 — https://wa.me/5541997567138
+- E-mail: willian.apv@gmail.com — mailto:willian.apv@gmail.com
+- LinkedIn: https://www.linkedin.com/in/willianalmeidadecastro/
+
+Como aplicar:
+1. Faça backup do projeto.
+2. Substitua src/App.tsx e src/App.css pelos arquivos deste pacote.
+3. Mantenha public/vila-principal.png que já existe no projeto.
+4. Rode npm run dev e confira a caixa de correio no mapa e a seção CONTATO no final da página.
+
+Na seção CONTATO, WhatsApp e e-mail também aparecem como ações principais; os três canais ficam listados logo abaixo. A caixa de correio do mapa mantém a interação por proximidade e tecla E.
 
 
-Correção v6.1: ajustado o tipo de diálogo do mercado para abrir o conteúdo de experiência/café corretamente.
+Atualizacao v9: removido o texto sobreposto "CONTATO" da caixa de correio no mapa. A caixa permanece visualmente sem rotulo; a interacao por proximidade e a secao de contatos continuam.

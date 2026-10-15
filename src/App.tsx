@@ -27,7 +27,8 @@ type DialogType =
   | "projects"
   | "experience"
   | "home"
-  | "market";
+  | "market"
+  | "contact";
 
 type InteractionPoint = {
   type: DialogType;
@@ -71,6 +72,7 @@ const interactionPoints: InteractionPoint[] = [
   { type: "experience", x: 16, y: 63, label: "mercado e café" },
   { type: "home", x: 79, y: 63, label: "casa" },
   { type: "sign", x: 72, y: 49, label: "placa Bem-vindo" },
+  { type: "contact", x: 50, y: 68, label: "caixa de correio / contato" },
 ];
 
 const getNearbyInteraction = (position: PlayerPosition) =>
@@ -100,6 +102,10 @@ const dialogContent: Record<DialogType, { title: string; text: string }> = {
   experience: {
     title: "Mercado — uma pausa para recarregar",
     text: "Vai explorar a vila inteira? Que tal comprar um café para recarregar as energias? ☕ Minha trajetória também foi construída no contato com pessoas, na rotina de trabalho e na prática de resolver problemas reais. Essas experiências me trouxeram disciplina, comunicação, senso de responsabilidade e uma visão de produto que quero levar comigo para a tecnologia.",
+  },
+  contact: {
+    title: "CAIXA DE CORREIO — VAMOS CONVERSAR!",
+    text: "Encontrou meu cantinho de contato! Estou em busca de uma oportunidade de estágio em tecnologia e aberto a conversar sobre projetos, ideias e oportunidades. Escolha um canal abaixo para falar comigo.",
   },
   sign: {
     title: "BEM-VINDO AO WILLIAN.EXE!",
@@ -290,6 +296,7 @@ function App() {
             <div className="map-hotspot hotspot-market" aria-hidden="true">MERCADO</div>
             <div className="map-hotspot hotspot-home" aria-hidden="true">CASA</div>
             <div className="map-hotspot hotspot-sign" aria-hidden="true">BEM<br />VINDO</div>
+            <div className="mailbox-object" aria-hidden="true"><span className="mailbox-flag" /><span className="mailbox-slot" /><span className="mailbox-post" /></div>
             <div className={`player-sprite facing-${facing}${isMoving ? " is-moving" : ""}`} style={{ left: `${player.x}%`, top: `${player.y}%` }} aria-label="Personagem Willian controlado pelo teclado" role="img">
               <span className="sprite-shadow" /><span className="sprite-hair" /><span className="sprite-cap" /><span className="sprite-face"><i className="sprite-eyes" /><i className="sprite-nose" /></span><span className="sprite-beard" /><span className="sprite-neck" /><span className="sprite-body" /><span className="sprite-arm arm-left" /><span className="sprite-arm arm-right" /><span className="sprite-legs" /><span className="sprite-shoes" />
             </div>
@@ -304,6 +311,13 @@ function App() {
                 <div className="dialog-copy">
                   <p className="dialog-title">{dialogContent[dialogType].title}</p>
                   <p>{dialogContent[dialogType].text}</p>
+                  {dialogType === "contact" && (
+                    <div className="mailbox-contact-links">
+                      <a href="https://wa.me/5541997567138" target="_blank" rel="noreferrer">WHATSAPP · 41 99756-7138 ↗</a>
+                      <a href="mailto:willian.apv@gmail.com">E-MAIL · willian.apv@gmail.com ↗</a>
+                      <a href="https://www.linkedin.com/in/willianalmeidadecastro/" target="_blank" rel="noreferrer">LINKEDIN · WILLIAN ALMEIDA DE CASTRO ↗</a>
+                    </div>
+                  )}
                   <small>Pressione E ou ESC para fechar.</small>
                 </div>
               </div>
@@ -444,16 +458,30 @@ function App() {
         <h2>
           Vamos construir algo <span className="accent">juntos?</span>
         </h2>
-        <p>Estou em busca de uma oportunidade de estágio em tecnologia.</p>
-        <a
-          className="primary-button contact-button"
-          href="mailto:seu-email@exemplo.com"
-        >
-          <span aria-hidden="true">✉</span> ENTRAR EM CONTATO
-        </a>
-        <p className="contact-note">
-          Lembre-se de trocar o e-mail de exemplo pelo seu endereço real.
-        </p>
+        <p>Estou em busca de uma oportunidade de estágio em tecnologia. Escolha o canal que preferir para falar comigo.</p>
+        <div className="contact-actions">
+          <a
+            className="primary-button contact-button"
+            href="https://wa.me/5541997567138"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Conversar com Willian pelo WhatsApp"
+          >
+            <span aria-hidden="true">◉</span> CHAMAR NO WHATSAPP
+          </a>
+          <a
+            className="secondary-button contact-email-button"
+            href="mailto:willian.apv@gmail.com"
+            aria-label="Enviar e-mail para Willian"
+          >
+            <span aria-hidden="true">✉</span> ENVIAR E-MAIL
+          </a>
+        </div>
+        <div className="contact-links-footer" aria-label="Outros canais de contato">
+          <a href="https://wa.me/5541997567138" target="_blank" rel="noreferrer">WHATSAPP · 41 99756-7138 ↗</a>
+          <a href="mailto:willian.apv@gmail.com">E-MAIL · willian.apv@gmail.com ↗</a>
+          <a href="https://www.linkedin.com/in/willianalmeidadecastro/" target="_blank" rel="noreferrer">LINKEDIN · WILLIAN ALMEIDA DE CASTRO ↗</a>
+        </div>
       </section>
 
       <footer className="footer">

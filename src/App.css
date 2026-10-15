@@ -2427,3 +2427,23 @@ kbd {
     padding: 8px 10px !important;
   }
 }
+
+
+/* Caixa de correio pixel art — novo ponto de contato */
+.mailbox-object { position:absolute; z-index:7; left:50%; top:64%; width:36px; height:42px; transform:translate(-50%,-50%); image-rendering:pixelated; pointer-events:none; filter:drop-shadow(2px 3px 0 #0007); }
+.mailbox-object::before { content:""; position:absolute; left:3px; top:2px; width:29px; height:21px; background:#b94735; border:3px solid #4b251d; border-radius:4px 4px 2px 2px; box-shadow:inset 0 -5px #8b3028, inset 0 3px #e06b4b; }
+.mailbox-post { position:absolute; left:15px; top:24px; width:7px; height:18px; background:#8b6038; border-left:2px solid #4b3423; border-right:2px solid #4b3423; }
+.mailbox-flag { position:absolute; z-index:2; right:-3px; top:4px; width:4px; height:13px; background:#f2d35b; border:1px solid #583c20; }
+.mailbox-slot { position:absolute; z-index:2; left:10px; top:10px; width:14px; height:3px; background:#371e19; border-bottom:1px solid #f7b89b; }
+.hotspot-mailbox { left:50%; top:59%; border-color:#d4ff5c; color:#d4ff5c; }
+.mailbox-contact-links { display:flex; flex-wrap:wrap; gap:7px; margin-top:12px; }
+.mailbox-contact-links a, .contact-links-footer a { display:inline-flex; align-items:center; border:1px solid #52654a; border-radius:4px; padding:7px 9px; color:#d4ff5c; background:#121c16; text-decoration:none; font-family:var(--mono); font-size:clamp(9px,.85vw,12px); font-weight:700; }
+.mailbox-contact-links a:hover, .contact-links-footer a:hover { background:#d4ff5c; color:#152010; }
+.contact-links-footer { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:10px; margin-top:18px; }
+@media (max-width:520px) { .mailbox-object { transform:translate(-50%,-50%) scale(.8); } .hotspot-mailbox { top:59%; } .mailbox-contact-links { gap:5px; } .mailbox-contact-links a { font-size:8px; padding:6px; } }
+
+/* Ações principais da seção de contato */
+.contact-actions { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:10px; }
+.contact-email-button { text-decoration:none; }
+.contact-links-footer { max-width:850px; }
+@media (max-width:520px) { .contact-actions { width:100%; } .contact-actions a { width:100%; justify-content:center; box-sizing:border-box; } .contact-links-footer { gap:7px; } .contact-links-footer a { max-width:100%; overflow-wrap:anywhere; justify-content:center; text-align:center; } }
